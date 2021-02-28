@@ -12,7 +12,7 @@ To overcome this - This is my attempt to create an app that will add such functi
 It goes over all .md files in given directory and sub dirs and analyze each file, extract links data. Later it draws circle for each file and draw line between those ones that have interlinks.
 
 At the moment it looks like this:
-![Sample image](img/Screenshot from 2021-02-28 21-07-38.png)
+![Sample image](img/screen01.png)
 
 ## Plan (TODO):
 - Adding interactivity for mouse and keys

@@ -1,6 +1,6 @@
 import math
 import markdown
-import os
+import os, sys
 from lxml import etree
 import pygame
 
@@ -19,7 +19,7 @@ for root, dirs, files in os.walk(path):
 #print all the file names
 for file, fullpath in filelist:
     if file not in masterlist:
-        masterlist[file] = {'links': [], 'ext': []}
+        masterlist[file] = {'links': [], 'ext': [], 'name':file}
 
     with open(fullpath, 'r') as current_file:
         md_data = current_file.read().replace('\n',' ')
@@ -32,9 +32,20 @@ for file, fullpath in filelist:
         temp_name = f"{link_target}.md"
         if os.path.isfile(f"{path}/{temp_name}"):
             temp_name = temp_name.split("/")[-1]
-            print (temp_name)
+            # print (temp_name)
             masterlist[file]['links'].append(temp_name)
 
+# print(sys.argv)
+
+target = None
+if len(sys.argv) > 1:
+    # Single target mode
+    target = sys.argv[1].split("/")[-1]
+    print(f"Looking for the {target}")
+    if target in masterlist:
+        print(f"The {target} found in the wiki!")
+    else:
+        target = None
 
 # The pygame boilerplate 
 WIDTH = 1000
@@ -67,7 +78,8 @@ for i,element in enumerate(masterlist):
             masterlist[element]['ext'].append(el)
 # For some quick print
 for el in masterlist:
-    print(f"{el} from: {len(masterlist[el]['links'])} to: {len(masterlist[el]['ext'])}")
+    # print(f"{el} from: {len(masterlist[el]['links'])} to: {len(masterlist[el]['ext'])}")
+    pass
 
 ## initialize pygame and create window
 pygame.init()
@@ -93,18 +105,52 @@ while running:
     mpos = pygame.mouse.get_pos()
     p1, p2, p3 = pygame.mouse.get_pressed()
 
-    for c in masterlist:
+    if target is None:
+        for c in masterlist:
+            if len(masterlist[c]['links']):
+                for neigh in masterlist[c]['links']:
+                    try:
+                        pygame.draw.line(screen, (130,130,130), masterlist[c]['pos'], masterlist[neigh]['pos'], 1)
+                    except:
+                        pass
+
+        for c in masterlist:
+            thisR = (R + len(masterlist[c]['links']) / 2)
+            pos = masterlist[c]['pos']
+            clr = (130,30,130)
+
+            # checking for the mouse click
+            distance = math.sqrt((mpos[0]-pos[0])**2 + (mpos[1]-pos[1])**2)
+            if p1 and (distance < thisR+5):
+                masterlist[c]['pos'] = mpos
+                clr = (130,230,130)
+
+            pygame.draw.circle(screen, clr, pos, thisR, 0)
+    else:
+        c = target
+        clr = (130,30,130)
         if len(masterlist[c]['links']):
             for neigh in masterlist[c]['links']:
                 try:
-                    pygame.draw.line(screen, (130,130,130), masterlist[c]['pos'], masterlist[neigh]['pos'], 1)
+                    pos = masterlist[neigh]['pos']
+                    thisR = (R + len(masterlist[neigh]['links']) / 2)
+                    pygame.draw.line(screen, (130,130,130), pos, masterlist[c]['pos'], 1)
+                    pygame.draw.circle(screen, clr, pos, thisR, 0)
                 except:
                     pass
 
-    for c in masterlist:
+        if len(masterlist[c]['ext']):
+            for neigh in masterlist[c]['ext']:
+                try:
+                    pos = masterlist[neigh]['pos']
+                    thisR = (R + len(masterlist[neigh]['links']) / 2)
+                    pygame.draw.line(screen, (130,130,130), pos, masterlist[c]['pos'], 1)
+                    pygame.draw.circle(screen, clr, pos, thisR, 0)
+                except:
+                    pass
+
         thisR = (R + len(masterlist[c]['links']) / 2)
         pos = masterlist[c]['pos']
-        clr = (130,30,130)
 
         # checking for the mouse click
         distance = math.sqrt((mpos[0]-pos[0])**2 + (mpos[1]-pos[1])**2)
@@ -113,7 +159,6 @@ while running:
             clr = (130,230,130)
 
         pygame.draw.circle(screen, clr, pos, thisR, 0)
-
 
 
     ## Done after drawing everything to the screen

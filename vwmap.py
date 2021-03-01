@@ -87,6 +87,7 @@ pygame.mixer.init()  ## For sound
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("VimWikiLingGraph")
 clock = pygame.time.Clock()     ## For syncing the FPS
+font = pygame.font.Font(pygame.font.get_default_font(), 15)
 
 ## Game loop
 running = True
@@ -136,6 +137,8 @@ while running:
                     thisR = (R + len(masterlist[neigh]['links']) / 2)
                     pygame.draw.line(screen, (130,130,130), pos, masterlist[c]['pos'], 1)
                     pygame.draw.circle(screen, clr, pos, thisR, 0)
+                    text_surface = font.render(masterlist[neigh]['name'], True, (0, 0, 0))
+                    screen.blit(text_surface, dest=pos)
                 except:
                     pass
 
@@ -146,6 +149,8 @@ while running:
                     thisR = (R + len(masterlist[neigh]['links']) / 2)
                     pygame.draw.line(screen, (130,130,130), pos, masterlist[c]['pos'], 1)
                     pygame.draw.circle(screen, clr, pos, thisR, 0)
+                    text_surface = font.render(masterlist[neigh]['name'], True, (0, 0, 0))
+                    screen.blit(text_surface, dest=pos)
                 except:
                     pass
 
@@ -159,6 +164,8 @@ while running:
             clr = (130,230,130)
 
         pygame.draw.circle(screen, clr, pos, thisR, 0)
+        text_surface = font.render(masterlist[c]['name'], True, (0, 0, 0))
+        screen.blit(text_surface, dest=pos)
 
 
     ## Done after drawing everything to the screen
